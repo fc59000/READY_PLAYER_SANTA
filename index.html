@@ -1,219 +1,627 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>READY PLAYER SANTA™ – Mission 1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root {
-      --bg: #020816;
-      --bg-panel: #050d1f;
-      --primary: #7fd4ff;
-      --accent: #ff4b6e;
+      --bg: #020617;
+      --bg-alt: #020817;
+      --panel: #050b1d;
+      --panel-soft: #070f26;
+      --primary: #7dd3fc;
+      --primary-soft: rgba(125, 211, 252, 0.35);
+      --accent: #f97373;
+      --accent-soft: rgba(249, 115, 115, 0.25);
       --text: #e5f3ff;
-      --muted: #7a8ba3;
-      --mono: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --muted: #94a3b8;
+      --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
       --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      font-family: var(--sans);
+      background: radial-gradient(circle at top, #0f172a 0, #020617 50%, #000 100%);
+      color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline global */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.02) 0px,
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.7;
+      mix-blend-mode: soft-light;
+      z-index: 5;
+    }
+
+    /* LOADING SCREEN */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #020617 0, #000 70%);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-family: var(--sans);
-      background: radial-gradient(circle at top, #0b2545, #020816 55%, #000 100%);
+      z-index: 20;
       color: var(--text);
     }
-    .frame {
-      max-width: 780px;
-      width: 100%;
-      margin: 24px;
-      padding: 32px 28px 28px;
+
+    .loading-inner {
+      text-align: center;
+      max-width: 420px;
+      padding: 32px 24px;
       border-radius: 18px;
-      background: radial-gradient(circle at top left, #102644, #050b18 60%, #02040a 100%);
-      border: 1px solid rgba(127, 212, 255, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background:
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
       box-shadow:
-        0 0 40px rgba(0, 198, 255, 0.25),
-        0 24px 60px rgba(0, 0, 0, 0.85);
+        0 0 30px rgba(15, 23, 42, 0.9),
+        0 0 50px rgba(56, 189, 248, 0.3);
       position: relative;
       overflow: hidden;
     }
-    .frame::before {
+
+    .loading-inner::before {
       content: "";
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 10% 0%, rgba(127, 212, 255, 0.08), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(255, 75, 110, 0.1), transparent 55%);
-      opacity: 0.9;
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+      opacity: 0.85;
       pointer-events: none;
     }
-    .frame-inner {
+
+    .loading-content {
       position: relative;
       z-index: 1;
     }
-    .hud-line {
+
+    .loading-title {
       font-family: var(--mono);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--muted);
-      text-align: center;
       margin-bottom: 16px;
     }
-    .hud-line span {
-      color: var(--primary);
-    }
-    h1 {
+
+    .loading-logo {
       font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      letter-spacing: 0.32em;
-      font-size: 0.9rem;
-      text-align: center;
       color: var(--primary);
-      margin: 0 0 18px;
+      margin-bottom: 22px;
     }
-    .separator {
-      height: 1px;
+
+    .loading-main {
+      font-size: 1rem;
+      margin-bottom: 22px;
+    }
+
+    .loading-main span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .loading-bar {
       width: 100%;
-      margin: 12px 0 20px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
+      transition: width 0.15s linear;
+    }
+
+    .loading-percent {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .loading-hint {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* MAIN CONTENT */
+    .shell {
+      position: relative;
+      max-width: 880px;
+      margin: 72px auto 56px;
+      padding: 0 20px 72px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+
+    .shell.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .panel {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background:
+        radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98)),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      box-shadow:
+        0 0 40px rgba(15, 23, 42, 1),
+        0 24px 80px rgba(0, 0, 0, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.14), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+      padding: 26px 24px 24px;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hud-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.86);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #22c55e, #15803d);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    }
+
+    .title {
+      text-align: center;
+      margin: 16px 0 8px;
+    }
+
+    .title-main {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .title-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .separator {
+      width: 100%;
+      height: 1px;
+      margin: 18px 0 22px;
       background: linear-gradient(
         to right,
         transparent,
-        rgba(127, 212, 255, 0.7),
+        rgba(148, 163, 184, 0.9),
+        rgba(125, 211, 252, 0.85),
+        rgba(148, 163, 184, 0.9),
         transparent
       );
       opacity: 0.75;
     }
-    p {
-      margin: 0 0 12px;
-      line-height: 1.6;
+
+    .story {
       font-size: 0.98rem;
+      line-height: 1.7;
+      color: var(--text);
+      min-height: 140px;
+      white-space: pre-wrap;
+      position: relative;
     }
-    .indent {
-      margin-left: 0.75rem;
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.1em;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+      background: var(--primary);
+      animation: blink 1s steps(2, start) infinite;
     }
-    .mission {
-      margin: 18px 0 18px;
-      padding: 14px 14px 10px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(8, 32, 64, 0.95), rgba(4, 16, 40, 0.95));
-      border: 1px solid rgba(127, 212, 255, 0.35);
-      box-shadow: 0 0 20px rgba(0, 198, 255, 0.18);
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
     }
+
+    .mission-panel {
+      margin-top: 22px;
+      padding: 15px 14px 12px;
+      border-radius: 14px;
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.98)
+      );
+      border: 1px solid var(--primary-soft);
+      box-shadow:
+        0 0 24px rgba(56, 189, 248, 0.25),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
     .mission-title {
       font-family: var(--mono);
       font-size: 0.78rem;
-      text-transform: uppercase;
       letter-spacing: 0.22em;
+      text-transform: uppercase;
       color: var(--primary);
       margin-bottom: 8px;
     }
+
+    .mission-body {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
     .mission-list {
       list-style: none;
       padding-left: 0;
-      margin: 6px 0 4px;
-      font-size: 0.96rem;
+      margin: 8px 0 0;
+      font-size: 0.95rem;
     }
-    .mission-list li::before {
-      content: "▸";
-      color: var(--accent);
-      margin-right: 0.4rem;
-      font-size: 0.9rem;
-    }
+
     .mission-list li {
       margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
     }
-    .em {
+
+    .mission-bullet {
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-top: 2px;
+    }
+
+    .mission-text span {
       color: var(--primary);
       font-weight: 500;
     }
+
     .tagline {
-      margin-top: 16px;
+      margin-top: 20px;
       font-size: 0.9rem;
-      font-style: italic;
       color: var(--muted);
+      font-style: italic;
+      text-align: center;
     }
+
     .footer {
-      margin-top: 22px;
+      margin-top: 24px;
       text-align: center;
       font-family: var(--mono);
-      font-size: 0.82rem;
-      letter-spacing: 0.26em;
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
     }
-    .footer strong {
-      display: block;
-      margin-top: 6px;
+
+    .footer-main {
       color: var(--primary);
-      letter-spacing: 0.32em;
+      margin-bottom: 4px;
     }
-    @media (max-width: 600px) {
-      .frame { padding: 24px 18px 20px; }
-      .hud-line { letter-spacing: 0.18em; }
-      h1 { letter-spacing: 0.24em; }
+
+    .footer-sub {
+      letter-spacing: 0.26em;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-skip {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 6px 14px 6px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-skip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+    }
+
+    .btn-skip span {
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        margin: 56px auto 40px;
+        padding-bottom: 48px;
+      }
+      .panel-inner {
+        padding: 20px 16px 18px;
+      }
+      .hud-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .title-main {
+        letter-spacing: 0.22em;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="frame">
-    <div class="frame-inner">
-      <div class="hud-line">
-        LOADING… <span>INITIALIZING GAME PROTOCOL…</span>
-      </div>
 
-      <h1>DRCI, L’HEURE APPROCHE.</h1>
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-inner">
+    <div class="loading-content">
+      <div class="loading-title">INITIALISATION EN COURS</div>
+      <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
+      <div class="loading-main">
+        Chargement du <span>protocole Santa</span>…<br>
+        Mise en ligne de la Mission 1.
+      </div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill" id="loading-fill"></div>
+      </div>
+      <div class="loading-percent" id="loading-percent">0%</div>
+      <div class="loading-hint">
+        Conseil&nbsp;: commencez déjà à penser au cadeau que vous aimeriez voir très convoité.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN SHELL -->
+<main class="shell" id="shell">
+  <section class="panel">
+    <div class="panel-inner">
+      <header class="hud-header">
+        <div class="hud-pill">
+          <span class="hud-dot"></span>
+          <span>TRANSMISSION SÉCURISÉE – SANTA</span>
+        </div>
+        <div>DRCI · GHICL · 11.12.25</div>
+      </header>
+
+      <div class="title">
+        <div class="title-main">READY PLAYER SANTA™</div>
+        <div class="title-sub">MISSION 1 · PROTOCOLE D’ACTIVATION</div>
+      </div>
 
       <div class="separator"></div>
 
-      <p>Chaque hiver, vous jouez le jeu du Secret Santa.</p>
-      <p>Mais cette année, quelque chose de plus vaste s’est mis en marche.  
-      Un protocole que je n’active que rarement.  
-      Un mode… réservé aux équipes prêtes à relever un défi.</p>
+      <div class="story">
+        <span id="story-text"></span><span class="cursor" id="cursor"></span>
+      </div>
 
-      <p>Je suis Santa.  
-      Et je vous le confirme&nbsp;: tout ne se déroulera pas comme d’habitude.</p>
-
-      <p>Le <span class="em">11.12.25</span>, un dispositif inédit décidera du destin de vos cadeaux.  
-      Un jeu. Une mécanique. Une série d’épreuves.  
-      Rien d’excessif. Rien de difficile.  
-      Mais suffisamment surprenant pour rendre l’expérience… inoubliable.</p>
-
-      <div class="mission">
-        <div class="mission-title">MISSION 1 – PARAMÈTRES INITIAUX</div>
-        <p class="indent">Votre première mission est simple, et pourtant déterminante&nbsp;:</p>
+      <div class="mission-panel" id="mission-panel" style="display:none;">
+        <div class="mission-title">MISSION 1 – PARAMÈTRES</div>
+        <p class="mission-body">
+          Votre première mission est simple, et pourtant déterminante&nbsp;:
+        </p>
         <ul class="mission-list">
-          <li>Trouvez un cadeau d’environ 10&nbsp;€</li>
-          <li>Pas de thème</li>
-          <li>Juste un objet qui mérite d’être désiré</li>
-          <li>Un cadeau qui donnera envie de jouer… et peut-être de se battre pour lui</li>
+          <li>
+            <div class="mission-bullet">▸</div>
+            <div class="mission-text">Trouvez un cadeau d’environ <span>10 €</span></div>
+          </li>
+          <li>
+            <div class="mission-bullet">▸</div>
+            <div class="mission-text">Aucun thème imposé</div>
+          </li>
+          <li>
+            <div class="mission-bullet">▸</div>
+            <div class="mission-text">Choisissez un objet qui <span>mérite d’être désiré</span></div>
+          </li>
+          <li>
+            <div class="mission-bullet">▸</div>
+            <div class="mission-text">
+              Un cadeau pour lequel quelqu’un aurait envie de jouer…  
+              et peut-être de se battre un peu
+            </div>
+          </li>
         </ul>
       </div>
 
-      <p>Car oui&nbsp;: certains cadeaux attireront toutes les convoitises.  
-      Et tout commencera là.</p>
-
-      <p>Le reste du protocole&nbsp;?  
-      Il se dévoilera par étapes.  
-      Comme toute bonne partie.</p>
-
-      <p>Préparez-vous.  
-      Restez curieux.  
-      Et choisissez bien votre cadeau&nbsp;:  
-      il pourrait devenir un enjeu bien plus important que vous ne l’imaginez.</p>
-
-      <p class="tagline">
+      <div class="tagline" id="tagline" style="display:none;">
         Le jeu qui transforme le Secret Santa… pour que chaque cadeau devienne une quête.
-      </p>
+      </div>
 
-      <div class="footer">
-        READY PLAYER SANTA™
-        <strong>NO THEME · ONLY PLAY</strong>
+      <div class="footer" id="footer" style="display:none;">
+        <div class="footer-main">READY PLAYER SANTA™</div>
+        <div class="footer-sub">NO THEME · ONLY PLAY</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-skip" id="skip-btn" type="button">
+          <span>⏩</span> AFFICHER TOUT
+        </button>
       </div>
     </div>
-  </main>
+  </section>
+</main>
+
+<script>
+  // --- LOADING ANIMATION ---
+  const loadingScreen = document.getElementById("loading-screen");
+  const loadingFill = document.getElementById("loading-fill");
+  const loadingPercent = document.getElementById("loading-percent");
+  const shell = document.getElementById("shell");
+
+  let loadValue = 0;
+  const loadInterval = setInterval(() => {
+    loadValue += Math.floor(Math.random() * 12) + 4; // +4 à +15
+    if (loadValue > 100) loadValue = 100;
+    loadingFill.style.width = loadValue + "%";
+    loadingPercent.textContent = loadValue + "%";
+
+    if (loadValue >= 100) {
+      clearInterval(loadInterval);
+      setTimeout(() => {
+        loadingScreen.style.opacity = "0";
+        loadingScreen.style.transition = "opacity 0.6s ease-out";
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          shell.classList.add("visible");
+          startTypewriter();
+        }, 650);
+      }, 400);
+    }
+  }, 180);
+
+  // --- TYPEWRITER ---
+  const storyEl = document.getElementById("story-text");
+  const cursorEl = document.getElementById("cursor");
+  const missionPanel = document.getElementById("mission-panel");
+  const taglineEl = document.getElementById("tagline");
+  const footerEl = document.getElementById("footer");
+  const skipBtn = document.getElementById("skip-btn");
+
+  const storyText = [
+    "DRCI,",
+    "",
+    "l’heure approche.",
+    "",
+    "Vous avez joué au Secret Santa.",
+    "Jusqu’à aujourd’hui.",
+    "",
+    "Cette année, quelque chose de plus vaste s’est mis en marche.",
+    "Un protocole que je n’active que rarement.",
+    "Un mode… réservé aux équipes prêtes à relever un défi.",
+    "",
+    "Je suis Santa.",
+    "Et je vous le confirme : tout ne se déroulera pas comme d’habitude.",
+    "",
+    "Le 11.12.25, un dispositif inédit décidera du destin de vos cadeaux.",
+    "Un jeu. Une mécanique. Une série d’épreuves.",
+    "Rien d’excessif. Rien de difficile.",
+    "Mais suffisamment surprenant pour rendre l’expérience… inoubliable."
+  ].join("\n");
+
+  let charIndex = 0;
+  let typingSpeed = 26; // ms
+  let typeInterval = null;
+  let finishedTyping = false;
+
+  function typeStep() {
+    if (charIndex < storyText.length) {
+      storyEl.textContent += storyText.charAt(charIndex);
+      charIndex++;
+    } else {
+      clearInterval(typeInterval);
+      finishedTyping = true;
+      showAfterStory();
+    }
+  }
+
+  function startTypewriter() {
+    typeInterval = setInterval(typeStep, typingSpeed);
+  }
+
+  function showAfterStory() {
+    cursorEl.style.display = "none";
+    missionPanel.style.display = "block";
+    setTimeout(() => {
+      taglineEl.style.display = "block";
+    }, 250);
+    setTimeout(() => {
+      footerEl.style.display = "block";
+    }, 450);
+  }
+
+  function showAllNow() {
+    clearInterval(typeInterval);
+    storyEl.textContent = storyText;
+    finishedTyping = true;
+    cursorEl.style.display = "none";
+    missionPanel.style.display = "block";
+    taglineEl.style.display = "block";
+    footerEl.style.display = "block";
+  }
+
+  skipBtn.addEventListener("click", () => {
+    if (!finishedTyping) {
+      showAllNow();
+    }
+  });
+</script>
 </body>
 </html>
