@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>READY PLAYER SANTA™ – Mission 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020816;
+      --bg-panel: #050d1f;
+      --primary: #7fd4ff;
+      --accent: #ff4b6e;
+      --text: #e5f3ff;
+      --muted: #7a8ba3;
+      --mono: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--sans);
+      background: radial-gradient(circle at top, #0b2545, #020816 55%, #000 100%);
+      color: var(--text);
+    }
+    .frame {
+      max-width: 780px;
+      width: 100%;
+      margin: 24px;
+      padding: 32px 28px 28px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, #102644, #050b18 60%, #02040a 100%);
+      border: 1px solid rgba(127, 212, 255, 0.25);
+      box-shadow:
+        0 0 40px rgba(0, 198, 255, 0.25),
+        0 24px 60px rgba(0, 0, 0, 0.85);
+      position: relative;
+      overflow: hidden;
+    }
+    .frame::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(127, 212, 255, 0.08), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(255, 75, 110, 0.1), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .frame-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .hud-line {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .hud-line span {
+      color: var(--primary);
+    }
+    h1 {
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.32em;
+      font-size: 0.9rem;
+      text-align: center;
+      color: var(--primary);
+      margin: 0 0 18px;
+    }
+    .separator {
+      height: 1px;
+      width: 100%;
+      margin: 12px 0 20px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(127, 212, 255, 0.7),
+        transparent
+      );
+      opacity: 0.75;
+    }
+    p {
+      margin: 0 0 12px;
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+    .indent {
+      margin-left: 0.75rem;
+    }
+    .mission {
+      margin: 18px 0 18px;
+      padding: 14px 14px 10px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(8, 32, 64, 0.95), rgba(4, 16, 40, 0.95));
+      border: 1px solid rgba(127, 212, 255, 0.35);
+      box-shadow: 0 0 20px rgba(0, 198, 255, 0.18);
+    }
+    .mission-title {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .mission-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0 4px;
+      font-size: 0.96rem;
+    }
+    .mission-list li::before {
+      content: "▸";
+      color: var(--accent);
+      margin-right: 0.4rem;
+      font-size: 0.9rem;
+    }
+    .mission-list li {
+      margin-bottom: 6px;
+    }
+    .em {
+      color: var(--primary);
+      font-weight: 500;
+    }
+    .tagline {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+    .footer {
+      margin-top: 22px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .footer strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--primary);
+      letter-spacing: 0.32em;
+    }
+    @media (max-width: 600px) {
+      .frame { padding: 24px 18px 20px; }
+      .hud-line { letter-spacing: 0.18em; }
+      h1 { letter-spacing: 0.24em; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <div class="frame-inner">
+      <div class="hud-line">
+        LOADING… <span>INITIALIZING GAME PROTOCOL…</span>
+      </div>
+
+      <h1>DRCI, L’HEURE APPROCHE.</h1>
+
+      <div class="separator"></div>
+
+      <p>Chaque hiver, vous jouez le jeu du Secret Santa.</p>
+      <p>Mais cette année, quelque chose de plus vaste s’est mis en marche.  
+      Un protocole que je n’active que rarement.  
+      Un mode… réservé aux équipes prêtes à relever un défi.</p>
+
+      <p>Je suis Santa.  
+      Et je vous le confirme&nbsp;: tout ne se déroulera pas comme d’habitude.</p>
+
+      <p>Le <span class="em">11.12.25</span>, un dispositif inédit décidera du destin de vos cadeaux.  
+      Un jeu. Une mécanique. Une série d’épreuves.  
+      Rien d’excessif. Rien de difficile.  
+      Mais suffisamment surprenant pour rendre l’expérience… inoubliable.</p>
+
+      <div class="mission">
+        <div class="mission-title">MISSION 1 – PARAMÈTRES INITIAUX</div>
+        <p class="indent">Votre première mission est simple, et pourtant déterminante&nbsp;:</p>
+        <ul class="mission-list">
+          <li>Trouvez un cadeau d’environ 10&nbsp;€</li>
+          <li>Pas de thème</li>
+          <li>Juste un objet qui mérite d’être désiré</li>
+          <li>Un cadeau qui donnera envie de jouer… et peut-être de se battre pour lui</li>
+        </ul>
+      </div>
+
+      <p>Car oui&nbsp;: certains cadeaux attireront toutes les convoitises.  
+      Et tout commencera là.</p>
+
+      <p>Le reste du protocole&nbsp;?  
+      Il se dévoilera par étapes.  
+      Comme toute bonne partie.</p>
+
+      <p>Préparez-vous.  
+      Restez curieux.  
+      Et choisissez bien votre cadeau&nbsp;:  
+      il pourrait devenir un enjeu bien plus important que vous ne l’imaginez.</p>
+
+      <p class="tagline">
+        Le jeu qui transforme le Secret Santa… pour que chaque cadeau devienne une quête.
+      </p>
+
+      <div class="footer">
+        READY PLAYER SANTA™
+        <strong>NO THEME · ONLY PLAY</strong>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
