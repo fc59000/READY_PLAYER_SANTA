@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>READY PLAYER SANTA™ – Mission 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-alt: #020817;
+      --panel: #050b1d;
+      --panel-soft: #070f26;
+      --primary: #7dd3fc;
+      --primary-soft: rgba(125, 211, 252, 0.35);
+      --accent: #f97373;
+      --accent-soft: rgba(249, 115, 115, 0.25);
+      --text: #e5f3ff;
+      --muted: #94a3b8;
+      --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: radial-gradient(circle at top, #0f172a 0, #020617 50%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.02) 0px,
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.7;
+      mix-blend-mode: soft-light;
+      z-index: 5;
+    }
+
+    @keyframes soft-glitch {
+      0%, 100% { transform: translateY(0); filter: none; }
+      45% { transform: translateY(0); filter: none; }
+      50% { transform: translateY(-1px); filter: contrast(1.03) saturate(1.02); }
+      52% { transform: translateY(1px); filter: contrast(1.05) saturate(1.04); }
+      56% { transform: translateY(0); filter: none; }
+    }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #020617 0, #000 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      color: var(--text);
+      animation: soft-glitch 4s infinite ease-in-out alternate;
+    }
+
+    .loading-inner {
+      text-align: center;
+      max-width: 420px;
+      padding: 32px 24px;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background:
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+      box-shadow:
+        0 0 30px rgba(15, 23, 42, 0.9),
+        0 0 50px rgba(56, 189, 248, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-inner::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+      opacity: 0.85;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .loading-title {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .loading-logo {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 22px;
+    }
+
+    .loading-main { font-size: 1rem; margin-bottom: 22px; }
+    .loading-main span { color: var(--primary); font-weight: 600; }
+
+    .loading-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
+      transition: width 0.15s linear;
+    }
+
+    .loading-percent {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .loading-hint {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .shell {
+      position: relative;
+      max-width: 880px;
+      margin: 72px auto 56px;
+      padding: 0 20px 72px;
+      display: flex;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+
+    .shell.visible { opacity: 1; transform: translateY(0); }
+
+    .panel {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background:
+        radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98)),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      box-shadow:
+        0 0 40px rgba(15, 23, 42, 1),
+        0 24px 80px rgba(0, 0, 0, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+      padding: 26px 24px 24px;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .hud-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.86);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #22c55e, #15803d);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(34, 197, 94, 0.8); transform: scale(1); }
+      50% { box-shadow: 0 0 18px rgba(34, 197, 94, 1); transform: scale(1.08); }
+    }
+
+    .title { text-align: center; margin: 16px 0 8px; }
+    .title-main {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .title-sub { font-size: 0.9rem; color: var(--muted); }
+
+    .separator {
+      width: 100%;
+      height: 1px;
+      margin: 18px 0 22px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(148, 163, 184, 0.9),
+        rgba(125, 211, 252, 0.85),
+        rgba(148, 163, 184, 0.9),
+        transparent
+      );
+      opacity: 0.75;
+    }
+
+    .story {
+      font-size: 0.98rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      min-height: 160px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.1em;
+      background: var(--primary);
+      animation: blink 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .mission-panel {
+      margin-top: 22px;
+      padding: 15px 14px 12px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98));
+      border: 1px solid var(--primary-soft);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+    }
+
+    .mission-title {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .mission-body { font-size: 0.95rem; margin-bottom: 6px; }
+
+    .mission-list {
+      list-style: none;
+      padding-left: 0;
+      font-size: 0.95rem;
+    }
+
+    .mission-list li {
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .mission-bullet { color: var(--accent); }
+
+    .tagline {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+    }
+
+    .footer-main { color: var(--primary); margin-bottom: 4px; }
+    .footer-sub { letter-spacing: 0.26em; }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-skip {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 6px 14px;
+      cursor: pointer;
+    }
+
+    .btn-skip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-inner">
+    <div class="loading-title">INITIALISATION EN COURS</div>
+    <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
+    <div class="loading-main">
+      Chargement du <span>protocole Santa</span>…<br>
+      Mise en ligne de la Mission 2.
+    </div>
+
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-fill"></div>
+    </div>
+    <div class="loading-percent" id="loading-percent">0%</div>
+
+    <div class="loading-hint">
+      Conseil : commencez déjà à penser au cadeau que vous aimeriez voir très convoité.
+    </div>
+  </div>
+</div>
+
+<main class="shell" id="shell">
+  <section class="panel">
+    <div class="panel-inner">
+      <header class="hud-header">
+        <div class="hud-pill">
+          <span class="hud-dot"></span>
+          <span>TRANSMISSION SÉCURISÉE – SANTA</span>
+        </div>
+        <div>DRCI · GHICL · 11.12.25</div>
+      </header>
+
+      <div class="title">
+        <div class="title-main">READY PLAYER SANTA™</div>
+        <div class="title-sub">MISSION 2 · BE READY</div>
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="story">
+        <span id="story-text"></span><span class="cursor" id="cursor"></span>
+      </div>
+
+      
+      <div class="tagline" id="tagline" style="display:none;">
+        Le jeu qui transforme le Secret Santa… pour que chaque cadeau devienne une quête.
+      </div>
+
+      <div class="footer" id="footer" style="display:none;">
+        <div class="footer-main">READY PLAYER SANTA™</div>
+        <div class="footer-sub">NO THEME · ONLY PLAY</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-skip" id="skip-btn" type="button">⏩ AFFICHER TOUT</button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+  const loadingScreen = document.getElementById("loading-screen");
+  const loadingFill = document.getElementById("loading-fill");
+  const loadingPercent = document.getElementById("loading-percent");
+  const shell = document.getElementById("shell");
+
+  let loadValue = 0;
+  const loadInterval = setInterval(() => {
+    loadValue += Math.floor(Math.random() * 12) + 4;
+    if (loadValue > 100) loadValue = 100;
+    loadingFill.style.width = loadValue + "%";
+    loadingPercent.textContent = loadValue + "%";
+
+    if (loadValue >= 100) {
+      clearInterval(loadInterval);
+      setTimeout(() => {
+        loadingScreen.style.opacity = "0";
+        loadingScreen.style.transition = "opacity 0.6s ease-out";
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          shell.classList.add("visible");
+          startTypewriter();
+        }, 650);
+      }, 400);
+    }
+  }, 180);
+
+  const storyEl = document.getElementById("story-text");
+  const cursorEl = document.getElementById("cursor");
+  const missionPanel = document.getElementById("mission-panel");
+  const taglineEl = document.getElementById("tagline");
+  const footerEl = document.getElementById("footer");
+  const skipBtn = document.getElementById("skip-btn");
+
+  const storyText = [
+    "> S.A.N.T.A PROTOCOL v1.1",
+    "> Domaine : DRCI_GHICL",
+    "> Statut : ACTIVÉ",
+    "",
+    "DRCI,",
+    "",
+    "C’est encore moi… Santa.",
+    "",
+    "Laissez-moi vous révéler un secret.",
+    "Le protocole que vous avez reçu",
+    "est inspiré d’un film de Steven Spielberg :",
+    "Ready Player One.",
+    "",
+    "Dans ce film, chacun entre dans un monde numérique",
+    "où l’on choisit un avatar",
+    "et où les joueurs accomplissent de petites quêtes",
+    "pour avancer et s’amuser.",
+    "",
+    "C’est exactement ce que je vous prépare.",
+    "Vous aurez un avatar.",
+    "Vous découvrirez quelques mini-défis.",
+    "Rien de difficile : quelques clics, quelques choix.",
+    "Juste assez de jeu pour vous faire sourire.",
+    "",
+    "Et pourquoi tout cela ?",
+    "Pour distribuer les cadeaux autrement.",
+    "Pas au hasard.",
+    "Pas en piochant un nom.",
+    "",
+    "Cette année, ce seront vos actions qui décideront.",
+    "Vous jouerez pour échanger les cadeaux.",
+    "Pour tenter d’en décrocher un qui vous plaît vraiment.",
+    "Ou pour défendre celui que vous convoitez.",
+    "",
+    "Pas d’inquiétude :",
+    "c’est accessible,",
+    "léger,",
+    "et parfaitement guidé.",
+    "",
+    "Votre seule mission actuelle :",
+    "trouver un cadeau qui mérite d’être désiré.",
+    "",
+    "Le reste, je m’en occupe.",
+    "",
+    "— Santa",
+    "READY PLAYER SANTA™"
+  ].join("\n");
+
+  let charIndex = 0;
+  let typingSpeed = 25;
+  let finishedTyping = false;
+  let typeInterval;
+
+  function typeStep() {
+    if (charIndex < storyText.length) {
+      storyEl.textContent += storyText.charAt(charIndex);
+      charIndex++;
+    } else {
+      clearInterval(typeInterval);
+      finishedTyping = true;
+      showAfterStory();
+    }
+  }
+
+  function startTypewriter() {
+    typeInterval = setInterval(typeStep, typingSpeed);
+  }
+
+  function showAfterStory() {
+    cursorEl.style.display = "none";
+    missionPanel.style.display = "block";
+    setTimeout(() => taglineEl.style.display = "block", 250);
+    setTimeout(() => footerEl.style.display = "block", 450);
+  }
+
+  function showAllNow() {
+    clearInterval(typeInterval);
+    storyEl.textContent = storyText;
+    cursorEl.style.display = "none";
+    missionPanel.style.display = "block";
+    taglineEl.style.display = "block";
+    footerEl.style.display = "block";
+    finishedTyping = true;
+  }
+
+  skipBtn.addEventListener("click", () => {
+    if (!finishedTyping) showAllNow();
+  });
+</script>
+</body>
+</html>
