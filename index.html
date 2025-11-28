@@ -8,6 +8,7 @@
   <style>
     :root {
       --bg: #020617;
+      --bg-alt: #020817;
       --primary: #7dd3fc;
       --accent: #f97373;
       --text: #e5f3ff;
@@ -16,210 +17,46 @@
       --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: var(--sans);
       background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
       color: var(--text);
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      opacity: 1;
-      transition: opacity 0.5s ease-out;
     }
 
-    body.fade-out {
-      opacity: 0;
-    }
-
-    /* Scanline */
+    /* Scanline global */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
+      pointer-events: none;
       background: repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255,0.025) 0px,
-        rgba(255,255,255,0.025) 1px,
+        rgba(255, 255, 255, 0.02) 0px,
+        rgba(255, 255, 255, 0.02) 1px,
         transparent 2px,
         transparent 4px
       );
       mix-blend-mode: soft-light;
-      pointer-events: none;
-      z-index: 8;
+      opacity: 0.7;
+      z-index: 5;
     }
 
-    /* HUD snow très léger */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -10%;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(148, 163, 184, 0.25) 0, transparent 55%),
-        radial-gradient(circle at 80% 10%, rgba(125, 211, 252, 0.2) 0, transparent 60%),
-        radial-gradient(circle at 30% 80%, rgba(148, 163, 184, 0.18) 0, transparent 55%);
-      background-repeat: no-repeat;
-      opacity: 0.18;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      z-index: 7;
-      animation: hudSnowDrift 22s linear infinite alternate;
+    /* Shake HUD moyen */
+    @keyframes hud-shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(1px, -1px); }
+      40% { transform: translate(-1px, 1px); }
+      60% { transform: translate(1px, 1px); }
+      80% { transform: translate(-1px, -1px); }
+      100% { transform: translate(0, 0); }
     }
 
-    @keyframes hudSnowDrift {
-      0% { transform: translate3d(0,0,0); }
-      100% { transform: translate3d(-20px, 18px, 0); }
-    }
-
-    .panel {
-      width: 92%;
-      max-width: 620px;
-      padding: 40px 32px 46px;
-      border-radius: 20px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background:
-        radial-gradient(circle at top left, rgba(125, 211, 252, 0.12), transparent 65%),
-        linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 1));
-      box-shadow:
-        0 0 40px rgba(15, 23, 42, 1),
-        0 24px 80px rgba(0,0,0,0.9);
-      position: relative;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-      z-index: 9;
-    }
-
-    .panel.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .panel::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.22), transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.24), transparent 60%);
-      opacity: 0.85;
-      pointer-events: none;
-      mix-blend-mode: screen;
-    }
-
-    .hud-title {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-      color: var(--muted);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      position: relative;
-      z-index: 1;
-    }
-
-    .main-title {
-      font-family: var(--mono);
-      font-size: 1.2rem;
-      letter-spacing: 0.32em;
-      color: var(--primary);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      position: relative;
-      z-index: 1;
-    }
-
-    .sub {
-      color: var(--muted);
-      margin-bottom: 30px;
-      font-size: 0.92rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    .story {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      margin-bottom: 40px;
-      color: var(--text);
-      position: relative;
-      z-index: 1;
-    }
-
-    .btn-area {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .btn {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--primary);
-      background: radial-gradient(circle at top, rgba(125, 211, 252, 0.16), rgba(15, 23, 42, 0.9));
-      padding: 14px 18px;
-      border-radius: 12px;
-      border: 1px solid rgba(125, 211, 252, 0.7);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      text-decoration: none;
-      display: inline-block;
-      box-shadow:
-        0 0 0 rgba(56, 189, 248, 0.0),
-        0 0 0 rgba(248, 113, 113, 0.0);
-      animation: btnPulse 3.5s ease-in-out infinite;
-    }
-
-    @keyframes btnPulse {
-      0%, 100% {
-        box-shadow:
-          0 0 0 rgba(56, 189, 248, 0.0),
-          0 0 0 rgba(248, 113, 113, 0.0);
-      }
-      50% {
-        box-shadow:
-          0 0 16px rgba(56, 189, 248, 0.55),
-          0 0 24px rgba(248, 113, 113, 0.35);
-      }
-    }
-
-    .btn:hover {
-      color: #fff;
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .footer {
-      margin-top: 26px;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.22em;
-      color: var(--muted);
-      position: relative;
-      z-index: 1;
-    }
-
-    .footer span {
-      color: var(--primary);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    /* LOADER SANTAOS */
+    /* LOADING SCREEN */
     .loading-screen {
       position: fixed;
       inset: 0;
@@ -233,18 +70,23 @@
       animation: soft-glitch 4s infinite ease-in-out alternate;
     }
 
+    @keyframes soft-glitch {
+      0%, 100% { filter: none; }
+      50% { filter: contrast(1.03) saturate(1.04); }
+    }
+
     .loading-inner {
       text-align: center;
       max-width: 420px;
       padding: 32px 24px;
       border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.5);
       background:
-        radial-gradient(circle at top, rgba(125, 211, 252, 0.12), transparent 60%),
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
         radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
       box-shadow:
-        0 0 32px rgba(15, 23, 42, 0.9),
-        0 0 52px rgba(56, 189, 248, 0.35);
+        0 0 30px rgba(15, 23, 42, 0.9),
+        0 0 50px rgba(56, 189, 248, 0.3);
       position: relative;
       overflow: hidden;
     }
@@ -254,23 +96,17 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.22), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.28), transparent 55%);
-      opacity: 0.9;
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+      opacity: 0.85;
       pointer-events: none;
       mix-blend-mode: screen;
-    }
-
-    .loading-content {
-      position: relative;
-      z-index: 1;
     }
 
     .loading-title {
       font-family: var(--mono);
       font-size: 0.85rem;
       letter-spacing: 0.25em;
-      text-transform: uppercase;
       color: var(--muted);
       margin-bottom: 16px;
     }
@@ -279,9 +115,8 @@
       font-family: var(--mono);
       font-size: 0.78rem;
       letter-spacing: 0.22em;
-      text-transform: uppercase;
       color: var(--primary);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .loading-main {
@@ -297,18 +132,18 @@
     .loading-bar {
       width: 100%;
       height: 7px;
+      background: rgba(15, 23, 42, 0.8);
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
       overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.5);
       margin-bottom: 10px;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
     }
 
     .loading-bar-fill {
-      height: 100%;
       width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
       border-radius: inherit;
-      background: linear-gradient(90deg, #22c55e, #7dd3fc, #f97373, #a855f7);
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
       transition: width 0.15s linear;
     }
@@ -326,89 +161,175 @@
       font-style: italic;
     }
 
-    @keyframes soft-glitch {
-      0%, 100% { transform: translateY(0); filter: none; }
-      45% { transform: translateY(0); filter: none; }
-      50% { transform: translateY(-1px); filter: contrast(1.03) saturate(1.02); }
-      52% { transform: translateY(1px); filter: contrast(1.05) saturate(1.04); }
-      56% { transform: translateY(0); filter: none; }
+    /* MAIN SHELL */
+    .shell {
+      position: relative;
+      max-width: 720px;
+      margin: 80px auto;
+      padding: 0 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
     }
 
-    @media (max-width: 640px) {
-      .panel {
-        padding: 28px 18px 32px;
-      }
-      .main-title {
-        font-size: 1rem;
-        letter-spacing: 0.26em;
-      }
-      .story {
-        font-size: 0.9rem;
-      }
-      .btn {
-        font-size: 0.76rem;
-        letter-spacing: 0.16em;
-      }
+    .shell.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .panel {
+      width: 100%;
+      padding: 38px 30px 46px;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background:
+        radial-gradient(circle at top left, rgba(125, 211, 252, 0.08), transparent 60%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 1));
+      box-shadow:
+        0 0 40px rgba(15, 23, 42, 1),
+        0 24px 80px rgba(0, 0, 0, 0.9);
+      position: relative;
+      text-align: center;
+    }
+
+    .hud-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .main-title {
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      letter-spacing: 0.32em;
+      color: var(--primary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-bottom: 30px;
+      font-size: 0.92rem;
+    }
+
+    .story {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-bottom: 40px;
+      color: var(--text);
+    }
+
+    .btn-area {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: rgba(15, 23, 42, 0.8);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(125, 211, 252, 0.5);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.55);
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      margin-top: 26px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+    }
+
+    .footer span {
+      color: var(--primary);
+      display: block;
+      margin-bottom: 4px;
     }
   </style>
 </head>
+
 <body>
 
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loading-screen">
   <div class="loading-inner">
-    <div class="loading-content">
-      <div class="loading-title">INITIALISATION EN COURS</div>
-      <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
-      <div class="loading-main">
-        Activation du <span>SantaOS</span>…<br>
-        Préparation du protocole.
-      </div>
-      <div class="loading-bar">
-        <div class="loading-bar-fill" id="loading-fill"></div>
-      </div>
-      <div class="loading-percent" id="loading-percent">0%</div>
-      <div class="loading-hint">
-        Analyse des modules disponibles… connexion aux festivités en cours.
-      </div>
+    <div class="loading-title">INITIALISATION EN COURS</div>
+    <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
+    <div class="loading-main">
+      Chargement du <span>noyau SantaOS</span>…<br>
+      Activation du module d’accueil.
+    </div>
+
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-fill"></div>
+    </div>
+
+    <div class="loading-percent" id="loading-percent">0%</div>
+
+    <div class="loading-hint">
+      Conseil : gardez votre cadeau en tête. Santa analyse déjà vos envies.
     </div>
   </div>
 </div>
 
-<div class="panel" id="main-panel">
-  <div class="hud-title">PROTOCOLE S.A.N.T.A // DRCI</div>
+<!-- MAIN -->
+<main class="shell" id="shell">
+  <section class="panel">
+    <div class="hud-title">PROTOCOLE SANTA // DRCI</div>
 
-  <div class="main-title">READY PLAYER SANTA™</div>
-  <div class="sub">SYSTÈME INITIALISÉ — ACCÈS AUTORISÉ</div>
+    <div class="main-title">READY PLAYER SANTA™</div>
+    <div class="sub">SYSTÈME INITIALISÉ — ACCÈS AUTORISÉ</div>
 
-  <div class="story">
-    Bienvenue dans le protocole S.A.N.T.A.
+    <div class="story">
+Bienvenue dans le protocole S.A.N.T.A.
 
-    Les festivités approchent.
-    Le dispositif est en cours d’activation.
-    Deux modules sont actuellement disponibles.
+Les festivités approchent.
+Les systèmes s’éveillent.
+Deux modules sont actuellement disponibles.
 
-    Je vous accompagne.
-    — Santa
-  </div>
+Je vous accompagne.
+— Santa
+    </div>
 
-  <div class="btn-area">
-    <a class="btn nav-link" href="mission1.html">MISSION 1 — ACTIVATION</a>
-    <a class="btn nav-link" href="briefing.html">BRIEFING — COMPRENDRE LE JEU</a>
-  </div>
+    <div class="btn-area">
+      <a class="btn" href="mission1.html">MISSION 1 — ACTIVATION</a>
+      <a class="btn" href="briefing.html">BRIEFING — COMPRENDRE LE JEU</a>
+    </div>
 
-  <div class="footer">
-    <span>READY PLAYER SANTA™</span>
-    NO THEME · ONLY PLAY
-  </div>
-</div>
+    <div class="footer">
+      <span>READY PLAYER SANTA™</span>
+      NO THEME · ONLY PLAY
+    </div>
+  </section>
+</main>
 
 <script>
-  // Loader SantaOS
   const loadingScreen = document.getElementById("loading-screen");
   const loadingFill = document.getElementById("loading-fill");
   const loadingPercent = document.getElementById("loading-percent");
-  const mainPanel = document.getElementById("main-panel");
+  const shell = document.getElementById("shell");
 
   let loadValue = 0;
   const loadInterval = setInterval(() => {
@@ -420,29 +341,23 @@
 
     if (loadValue >= 100) {
       clearInterval(loadInterval);
+
       setTimeout(() => {
         loadingScreen.style.opacity = "0";
-        loadingScreen.style.transition = "opacity 0.6s ease-out";
+        loadingScreen.style.transition = "opacity 0.5s ease-out";
+
         setTimeout(() => {
           loadingScreen.style.display = "none";
-          mainPanel.classList.add("visible");
-        }, 650);
+          
+          // Activation shake
+          shell.style.animation = "hud-shake 0.35s ease";
+
+          shell.classList.add("visible");
+        }, 550);
       }, 400);
     }
   }, 160);
-
-  // Transition fade-out sur navigation
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const url = link.getAttribute("href");
-      document.body.classList.add("fade-out");
-      setTimeout(() => {
-        window.location.href = url;
-      }, 450);
-    });
-  });
 </script>
+
 </body>
 </html>
