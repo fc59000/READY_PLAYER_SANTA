@@ -86,27 +86,31 @@
       50% { transform: translateY(2px); }
     }
 
-    /* Effet neige HUD subtil */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        radial-gradient(circle, rgba(148, 163, 184, 0.2) 0, transparent 50%),
-        radial-gradient(circle, rgba(148, 163, 184, 0.15) 0, transparent 50%);
-      background-size: 280px 280px, 360px 360px;
-      background-position: 0 0, 140px 100px;
-      opacity: 0.08;
-      mix-blend-mode: screen;
-      animation: snowDrift 24s linear infinite;
-      z-index: 5;
-    }
+/* Effet neige HUD subtil AMÉLIORÉ */
+body::after {
+  content: "";
+  position: fixed;
+  top: -150%;    /* ← Déborde largement au-dessus */
+  left: -150%;   /* ← Déborde largement à gauche */
+  width: 400%;   /* ← 4x plus large */
+  height: 400%;  /* ← 4x plus haut */
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(148, 163, 184, 0.35) 0, transparent 50%),
+    radial-gradient(circle, rgba(148, 163, 184, 0.25) 0, transparent 50%),
+    radial-gradient(circle, rgba(148, 163, 184, 0.2) 0, transparent 50%);
+  background-size: 180px 180px, 280px 280px, 360px 360px;
+  background-position: 0 0, 140px 100px, 80px 200px;
+  opacity: 0.14;
+  mix-blend-mode: screen;
+  animation: snowDrift 24s linear infinite;
+  z-index: 5;
+}
 
-    @keyframes snowDrift {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-50px, 70px, 0); }
-    }
+@keyframes snowDrift {
+  0% { transform: translate3d(0, -100px, 0); }
+  100% { transform: translate3d(-50px, 100px, 0); }
+}
 
     /* Particules flottantes */
     .particles {
@@ -126,13 +130,14 @@
       opacity: 0;
       animation: particleFloat 20s infinite ease-in-out;
       box-shadow: 0 0 8px var(--primary-glow);
+      transition: opacity 0.3s ease-out;
     }
 
     @keyframes particleFloat {
-      0% { transform: translate3d(0, 100vh, 0); opacity: 0; }
+      0% { transform: translate3d(0, -100px, 0); opacity: 0; }
       10% { opacity: 0.6; }
       90% { opacity: 0.4; }
-      100% { transform: translate3d(50px, -100px, 0); opacity: 0; }
+      100% { transform: translate3d(50px, 100vh, 0); opacity: 0; }
     }
 
     /* Glitch subtil */
@@ -154,7 +159,7 @@
       100% { transform: translate(0, 0); }
     }
 
-    /* ===== LOADING SCREEN ===== */
+    /* ===== LOADING SCREEN ULTRA ===== */
     .loading-screen {
       position: fixed;
       inset: 0;
@@ -169,7 +174,7 @@
 
     .loading-inner {
       text-align: center;
-      max-width: 440px;
+      max-width: 460px;
       padding: var(--spacing-xl) var(--spacing-lg);
       border-radius: 20px;
       border: 1px solid rgba(148, 163, 184, 0.5);
@@ -232,6 +237,33 @@
       font-weight: 600;
     }
 
+    .boot-sequence {
+      margin-top: var(--spacing-md);
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted-dark);
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .boot-line {
+      margin-bottom: 6px;
+      opacity: 0;
+      transform: translateX(-10px);
+      animation: bootLine 0.4s ease-out forwards;
+    }
+
+    .boot-line:nth-child(1) { animation-delay: 0.3s; }
+    .boot-line:nth-child(2) { animation-delay: 0.6s; }
+    .boot-line:nth-child(3) { animation-delay: 0.9s; }
+
+    @keyframes bootLine {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
     .loading-bar {
       width: 100%;
       height: 8px;
@@ -239,6 +271,7 @@
       border-radius: 999px;
       overflow: hidden;
       margin-bottom: var(--spacing-sm);
+      margin-top: var(--spacing-lg);
       box-shadow: 
         0 0 0 1px rgba(148, 163, 184, 0.4),
         inset 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -316,6 +349,26 @@
     @keyframes panelBreath {
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.7; }
+    }
+
+    /* NOUVEAU: Grille HUD holographique */
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(125, 211, 252, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125, 211, 252, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 0;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.5; }
     }
 
     .panel-inner {
@@ -410,6 +463,15 @@
       white-space: pre-wrap;
       margin-bottom: var(--spacing-lg);
       min-height: 320px;
+      text-align: left;
+      width: 100%;
+      display: block;
+    }
+
+    #story-text {
+      display: block;
+      text-align: left;
+      width: 100%;
     }
 
     .cursor {
@@ -438,6 +500,23 @@
       box-shadow:
         0 0 30px rgba(56, 189, 248, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* NOUVEAU: Animation d'apparition du mission panel */
+    .mission-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.1), transparent);
+      transform: translateX(-100%);
+      animation: missionSweep 1.5s ease-out 0.3s;
+    }
+
+    @keyframes missionSweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
     .mission-title {
@@ -467,6 +546,18 @@
       gap: var(--spacing-sm);
       margin-bottom: var(--spacing-sm);
       line-height: 1.6;
+      opacity: 0;
+      animation: fadeInUp 0.4s ease-out forwards;
+    }
+
+    .mission-list li:nth-child(1) { animation-delay: 0.1s; }
+    .mission-list li:nth-child(2) { animation-delay: 0.2s; }
+    .mission-list li:nth-child(3) { animation-delay: 0.3s; }
+    .mission-list li:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .mission-bullet {
@@ -515,29 +606,74 @@
     .controls {
       margin-top: var(--spacing-md);
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: flex-end;
+      gap: var(--spacing-xs);
     }
 
     .btn-return {
       font-family: var(--mono);
-      font-size: 0.7rem;
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
       color: var(--muted);
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: transparent;
       border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
       padding: 7px 15px;
       cursor: pointer;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-return::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 0 0, var(--primary-glow), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      mix-blend-mode: screen;
+    }
+
+    /* NOUVEAU: Reflet lumineux mobile */
+    .btn-return::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+      );
+      transition: left 0.6s ease-out;
+    }
+
+    .btn-return:hover::after {
+      left: 150%;
     }
 
     .btn-return:hover {
       border-color: var(--primary);
       color: var(--primary);
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .btn-return:hover::before {
+      opacity: 1;
+    }
+
+    .btn-return:active {
+      transform: translateY(0);
     }
 
     .btn-skip {
@@ -564,6 +700,26 @@
       opacity: 0;
       transition: opacity var(--transition-fast);
       mix-blend-mode: screen;
+    }
+
+    .btn-skip::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+      );
+      transition: left 0.6s ease-out;
+    }
+
+    .btn-skip:hover::after {
+      left: 150%;
     }
 
     .btn-skip:hover {
@@ -600,6 +756,16 @@
         font-size: 0.88rem;
       }
     }
+
+    .btn-skip.clicked,
+    .btn-return.clicked {
+      animation: btnClick 0.3s ease-out;
+    }
+
+    @keyframes btnClick {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+    }
   </style>
 </head>
 
@@ -616,6 +782,12 @@
     <div class="loading-main">
       Chargement du <span>protocole Santa</span>…<br>
       Mise en ligne de la Mission 1.
+    </div>
+
+    <div class="boot-sequence">
+      <div class="boot-line">› Authentification DRCI...</div>
+      <div class="boot-line">› Chargement mission...</div>
+      <div class="boot-line">› Activation paramètres...</div>
     </div>
 
     <div class="loading-bar">
@@ -692,7 +864,7 @@
       </div>
 
       <div class="controls">
-        <a href="index.html" class="btn-return nav-link">← Retour</a>
+        <a href="index.html" class="btn-return nav-link"><span>⟵</span> PROTOCOLE S.A.N.T.A</a>
         <button class="btn-skip" id="skip-btn" type="button">⏩ AFFICHER TOUT</button>
       </div>
 
@@ -701,10 +873,29 @@
 </main>
 
 <script>
-  // ===== PARTICULES =====
+  // ===== AUDIO FEEDBACK =====
+  function playClickSound() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+  }
+
+  // ===== PARTICULES INTERACTIVES =====
   function createParticles() {
     const container = document.getElementById('particles');
-    const particleCount = 12;
+    const particleCount = 15;
     
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
@@ -715,6 +906,28 @@
       container.appendChild(particle);
     }
   }
+
+  document.addEventListener('mousemove', (e) => {
+    const particles = document.querySelectorAll('.particle');
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    
+    particles.forEach(particle => {
+      const rect = particle.getBoundingClientRect();
+      const particleX = rect.left + rect.width / 2;
+      const particleY = rect.top + rect.height / 2;
+      
+      const distance = Math.sqrt(
+        Math.pow(mouseX - particleX, 2) + 
+        Math.pow(mouseY - particleY, 2)
+      );
+      
+      if (distance < 120) {
+        const opacity = 1 - (distance / 120);
+        particle.style.opacity = opacity * 0.9;
+      }
+    });
+  });
 
   createParticles();
 
@@ -824,7 +1037,11 @@
   }
 
   skipBtn.addEventListener("click", () => {
-    if (!finishedTyping) showAllNow();
+    if (!finishedTyping) {
+      skipBtn.classList.add('clicked');
+      showAllNow();
+      try { playClickSound(); } catch (e) {}
+    }
   });
 
   // ===== TRANSITIONS =====
@@ -833,6 +1050,8 @@
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const href = link.getAttribute('href');
+      link.classList.add('clicked');
+      try { playClickSound(); } catch (e) {}
       document.body.classList.add('page-exit');
       setTimeout(() => {
         window.location.href = href;
