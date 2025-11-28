@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>READY PLAYER SANTA™ – Mission 1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     :root {
       --bg: #020617;
@@ -20,9 +21,7 @@
       --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -31,13 +30,6 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      position: relative;
-      opacity: 1;
-      transition: opacity 0.5s ease-out;
-    }
-
-    body.fade-out {
-      opacity: 0;
     }
 
     /* Scanline */
@@ -58,34 +50,20 @@
       z-index: 5;
     }
 
-    /* HUD snow très léger */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -10%;
-      background-image:
-        radial-gradient(circle at 15% 15%, rgba(148, 163, 184, 0.22) 0, transparent 55%),
-        radial-gradient(circle at 85% 85%, rgba(125, 211, 252, 0.18) 0, transparent 60%);
-      background-repeat: no-repeat;
-      opacity: 0.17;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      z-index: 4;
-      animation: hudSnowDrift 24s linear infinite alternate;
-    }
-
-    @keyframes hudSnowDrift {
-      0% { transform: translate3d(0,0,0); }
-      100% { transform: translate3d(18px, -16px, 0); }
+    /* Shake HUD moyen */
+    @keyframes hud-shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(1px, -1px); }
+      40% { transform: translate(-1px, 1px); }
+      60% { transform: translate(1px, 1px); }
+      80% { transform: translate(-1px, -1px); }
+      100% { transform: translate(0, 0); }
     }
 
     /* Soft glitch */
     @keyframes soft-glitch {
       0%, 100% { transform: translateY(0); filter: none; }
-      45% { transform: translateY(0); filter: none; }
-      50% { transform: translateY(-1px); filter: contrast(1.03) saturate(1.02); }
-      52% { transform: translateY(1px); filter: contrast(1.05) saturate(1.04); }
-      56% { transform: translateY(0); filter: none; }
+      50% { transform: translateY(-1px); filter: contrast(1.03) saturate(1.04); }
     }
 
     /* LOADING SCREEN */
@@ -109,7 +87,7 @@
       border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, 0.5);
       background:
-        radial-gradient(circle at top, rgba(125, 211, 252, 0.12), transparent 60%),
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
         radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
       box-shadow:
         0 0 30px rgba(15, 23, 42, 0.9),
@@ -123,16 +101,11 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.22), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.26), transparent 55%);
-      opacity: 0.9;
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+      opacity: 0.85;
       pointer-events: none;
       mix-blend-mode: screen;
-    }
-
-    .loading-content {
-      position: relative;
-      z-index: 1;
     }
 
     .loading-title {
@@ -148,7 +121,6 @@
       font-family: var(--mono);
       font-size: 0.78rem;
       letter-spacing: 0.22em;
-      text-transform: uppercase;
       color: var(--primary);
       margin-bottom: 22px;
     }
@@ -169,15 +141,15 @@
       border-radius: 999px;
       background: rgba(15, 23, 42, 0.8);
       overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
       margin-bottom: 10px;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
     }
 
     .loading-bar-fill {
       height: 100%;
       width: 0%;
+      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
       border-radius: inherit;
-      background: linear-gradient(90deg, #22c55e, #7dd3fc, #f97373, #a855f7);
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
       transition: width 0.15s linear;
     }
@@ -201,13 +173,9 @@
       max-width: 880px;
       margin: 72px auto 56px;
       padding: 0 20px 72px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-      z-index: 6;
     }
 
     .shell.visible {
@@ -234,8 +202,8 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.20), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.22), transparent 55%);
+        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.20), transparent 55%);
       opacity: 0.9;
       pointer-events: none;
       mix-blend-mode: screen;
@@ -280,8 +248,8 @@
     }
 
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 10px rgba(34, 197, 94, 0.8); transform: scale(1); }
-      50% { box-shadow: 0 0 18px rgba(34, 197, 94, 1); transform: scale(1.08); }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
     }
 
     .title {
@@ -346,11 +314,7 @@
       margin-top: 22px;
       padding: 15px 14px 12px;
       border-radius: 14px;
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.95),
-        rgba(15, 23, 42, 0.98)
-      );
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98));
       border: 1px solid var(--primary-soft);
       box-shadow:
         0 0 24px rgba(56, 189, 248, 0.25),
@@ -389,7 +353,7 @@
     .mission-bullet {
       color: var(--accent);
       font-size: 0.95rem;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .mission-text span {
@@ -411,7 +375,6 @@
       font-family: var(--mono);
       font-size: 0.78rem;
       letter-spacing: 0.22em;
-      text-transform: uppercase;
       color: var(--muted);
     }
 
@@ -427,9 +390,29 @@
     .controls {
       margin-top: 16px;
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Return button */
+    .btn-return {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-return:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
     }
 
     .btn-skip {
@@ -441,30 +424,14 @@
       background: transparent;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 6px 14px 6px 14px;
+      padding: 6px 14px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease-out;
-      text-decoration: none;
-      animation: btnPulse 3.7s ease-in-out infinite;
     }
 
     .btn-skip:hover {
       border-color: var(--primary);
       color: var(--primary);
       box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
-      transform: translateY(-1px);
-    }
-
-    @keyframes btnPulse {
-      0%, 100% { box-shadow: 0 0 0 rgba(56,189,248,0.0); }
-      50% { box-shadow: 0 0 12px rgba(56,189,248,0.5); }
-    }
-
-    .btn-skip span {
-      font-size: 0.7rem;
     }
 
     @media (max-width: 640px) {
@@ -472,46 +439,39 @@
         margin: 56px auto 40px;
         padding-bottom: 48px;
       }
-      .panel-inner {
-        padding: 20px 16px 18px;
-      }
-      .hud-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .title-main {
-        letter-spacing: 0.22em;
-      }
     }
   </style>
 </head>
+
 <body>
 
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loading-screen">
   <div class="loading-inner">
-    <div class="loading-content">
-      <div class="loading-title">INITIALISATION EN COURS</div>
-      <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
-      <div class="loading-main">
-        Chargement du <span>protocole Santa</span>…<br>
-        Mise en ligne de la Mission 1.
-      </div>
-      <div class="loading-bar">
-        <div class="loading-bar-fill" id="loading-fill"></div>
-      </div>
-      <div class="loading-percent" id="loading-percent">0%</div>
-      <div class="loading-hint">
-        Conseil&nbsp;: commencez déjà à penser au cadeau que vous aimeriez voir très convoité.
-      </div>
+    <div class="loading-title">INITIALISATION EN COURS</div>
+    <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
+    <div class="loading-main">
+      Chargement du <span>protocole Santa</span>…<br>
+      Mise en ligne de la Mission 1.
+    </div>
+
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-fill"></div>
+    </div>
+
+    <div class="loading-percent" id="loading-percent">0%</div>
+
+    <div class="loading-hint">
+      Conseil : commencez déjà à penser au cadeau que vous aimeriez voir très convoité.
     </div>
   </div>
 </div>
 
-<!-- MAIN SHELL -->
+<!-- MAIN -->
 <main class="shell" id="shell">
   <section class="panel">
     <div class="panel-inner">
+
       <header class="hud-header">
         <div class="hud-pill">
           <span class="hud-dot"></span>
@@ -534,7 +494,7 @@
       <div class="mission-panel" id="mission-panel" style="display:none;">
         <div class="mission-title">MISSION 1 – PARAMÈTRES</div>
         <p class="mission-body">
-          Votre première mission est simple, et pourtant déterminante&nbsp;:
+          Votre première mission est simple, et pourtant déterminante :
         </p>
         <ul class="mission-list">
           <li>
@@ -569,17 +529,16 @@
       </div>
 
       <div class="controls">
-        <a href="index.html" class="btn-skip nav-link">⟵ PROTOCOLE S.A.N.T.A</a>
-        <button class="btn-skip" id="skip-btn" type="button">
-          <span>⏩</span> AFFICHER TOUT
-        </button>
+        <a href="index.html" class="btn-return">← Retour</a>
+        <button class="btn-skip" id="skip-btn" type="button">⏩ AFFICHER TOUT</button>
       </div>
+
     </div>
   </section>
 </main>
 
 <script>
-  // --- LOADING ANIMATION ---
+  // Loader
   const loadingScreen = document.getElementById("loading-screen");
   const loadingFill = document.getElementById("loading-fill");
   const loadingPercent = document.getElementById("loading-percent");
@@ -587,26 +546,33 @@
 
   let loadValue = 0;
   const loadInterval = setInterval(() => {
-    loadValue += Math.floor(Math.random() * 12) + 4; // +4 à +15
+    loadValue += Math.floor(Math.random() * 12) + 4;
     if (loadValue > 100) loadValue = 100;
+
     loadingFill.style.width = loadValue + "%";
     loadingPercent.textContent = loadValue + "%";
 
     if (loadValue >= 100) {
       clearInterval(loadInterval);
+
       setTimeout(() => {
         loadingScreen.style.opacity = "0";
-        loadingScreen.style.transition = "opacity 0.6s ease-out";
+        loadingScreen.style.transition = "opacity 0.5s ease-out";
+
         setTimeout(() => {
           loadingScreen.style.display = "none";
+
+          // HUD shake activation
+          shell.style.animation = "hud-shake 0.35s ease";
+
           shell.classList.add("visible");
           startTypewriter();
-        }, 650);
+        }, 550);
       }, 400);
     }
   }, 180);
 
-  // --- TYPEWRITER ---
+  // Typewriter
   const storyEl = document.getElementById("story-text");
   const cursorEl = document.getElementById("cursor");
   const missionPanel = document.getElementById("mission-panel");
@@ -621,7 +587,7 @@
     "",
     "DRCI,",
     "",
-    "l’heure approche.",
+    "L’heure approche.",
     "",
     "Vous avez joué au Secret Santa.",
     "Jusqu’à aujourd’hui.",
@@ -640,7 +606,7 @@
   ].join("\n");
 
   let charIndex = 0;
-  let typingSpeed = 26; // ms
+  let typingSpeed = 26;
   let typeInterval = null;
   let finishedTyping = false;
 
@@ -662,42 +628,25 @@
   function showAfterStory() {
     cursorEl.style.display = "none";
     missionPanel.style.display = "block";
-    setTimeout(() => {
-      taglineEl.style.display = "block";
-    }, 250);
-    setTimeout(() => {
-      footerEl.style.display = "block";
-    }, 450);
+
+    setTimeout(() => taglineEl.style.display = "block", 250);
+    setTimeout(() => footerEl.style.display = "block", 450);
   }
 
   function showAllNow() {
     clearInterval(typeInterval);
     storyEl.textContent = storyText;
-    finishedTyping = true;
     cursorEl.style.display = "none";
     missionPanel.style.display = "block";
     taglineEl.style.display = "block";
     footerEl.style.display = "block";
+    finishedTyping = true;
   }
 
   skipBtn.addEventListener("click", () => {
-    if (!finishedTyping) {
-      showAllNow();
-    }
-  });
-
-  // Transition fade-out sur navigation
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const url = link.getAttribute("href");
-      document.body.classList.add("fade-out");
-      setTimeout(() => {
-        window.location.href = url;
-      }, 450);
-    });
+    if (!finishedTyping) showAllNow();
   });
 </script>
+
 </body>
 </html>
