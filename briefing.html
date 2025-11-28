@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>READY PLAYER SANTA™ – Mission 1</title>
+  <title>READY PLAYER SANTA™ – Briefing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root {
@@ -29,6 +29,13 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      opacity: 1;
+      transition: opacity 0.35s ease-out;
+      position: relative;
+    }
+
+    body.page-exit {
+      opacity: 0;
     }
 
     body::before {
@@ -46,6 +53,28 @@
       opacity: 0.7;
       mix-blend-mode: soft-light;
       z-index: 5;
+    }
+
+    /* Neige HUD */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(148, 163, 184, 0.25) 0, transparent 55%),
+        radial-gradient(circle, rgba(148, 163, 184, 0.18) 0, transparent 55%);
+      background-size: 260px 260px, 340px 340px;
+      background-position: 0 0, 120px 80px;
+      opacity: 0.12;
+      mix-blend-mode: screen;
+      animation: hudSnow 22s linear infinite;
+      z-index: 4;
+    }
+
+    @keyframes hudSnow {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-40px, 60px, 0); }
     }
 
     @keyframes soft-glitch {
@@ -76,11 +105,11 @@
       border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, 0.5);
       background:
-        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.18), transparent 60%),
         radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
       box-shadow:
         0 0 30px rgba(15, 23, 42, 0.9),
-        0 0 50px rgba(56, 189, 248, 0.3);
+        0 0 50px rgba(236, 72, 153, 0.35);
       position: relative;
       overflow: hidden;
     }
@@ -90,8 +119,8 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.3), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.35), transparent 55%);
       opacity: 0.85;
       pointer-events: none;
       mix-blend-mode: screen;
@@ -132,8 +161,8 @@
       height: 100%;
       width: 0%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
+      background: linear-gradient(90deg, #22d3ee, #a855f7, #f97373);
+      box-shadow: 0 0 18px rgba(244, 114, 182, 0.8);
       transition: width 0.15s linear;
     }
 
@@ -160,6 +189,7 @@
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      z-index: 1;
     }
 
     .shell.visible { opacity: 1; transform: translateY(0); }
@@ -176,6 +206,18 @@
         0 24px 80px rgba(0, 0, 0, 0.9);
       position: relative;
       overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.18), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.22), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      mix-blend-mode: screen;
     }
 
     .panel-inner {
@@ -264,40 +306,6 @@
       50%, 100% { opacity: 0; }
     }
 
-    .mission-panel {
-      margin-top: 22px;
-      padding: 15px 14px 12px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98));
-      border: 1px solid var(--primary-soft);
-      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
-    }
-
-    .mission-title {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
-
-    .mission-body { font-size: 0.95rem; margin-bottom: 6px; }
-
-    .mission-list {
-      list-style: none;
-      padding-left: 0;
-      font-size: 0.95rem;
-    }
-
-    .mission-list li {
-      margin-bottom: 6px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .mission-bullet { color: var(--accent); }
-
     .tagline {
       margin-top: 20px;
       font-size: 0.9rem;
@@ -322,6 +330,7 @@
       margin-top: 16px;
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
     }
 
     .btn-skip {
@@ -335,14 +344,58 @@
       border: 1px solid rgba(148, 163, 184, 0.6);
       padding: 6px 14px;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease-out;
+      position: relative;
+      overflow: hidden;
+      animation: btnPulse 3.2s ease-in-out infinite;
+    }
+
+    .btn-skip::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 0 0, rgba(125, 211, 252, 0.18), transparent 55%);
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+      mix-blend-mode: screen;
     }
 
     .btn-skip:hover {
       border-color: var(--primary);
       color: var(--primary);
       box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+      transform: translateY(-1px);
     }
 
+    .btn-skip:hover::before {
+      opacity: 1;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(56, 189, 248, 0); }
+      50% { box-shadow: 0 0 16px rgba(56, 189, 248, 0.5); }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        margin: 56px auto 40px;
+        padding-bottom: 48px;
+      }
+      .panel-inner {
+        padding: 20px 16px 18px;
+      }
+      .hud-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .title-main {
+        letter-spacing: 0.22em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -354,7 +407,7 @@
     <div class="loading-logo">READY PLAYER SANTA™ // PROTOCOLE DRCI</div>
     <div class="loading-main">
       Chargement du <span>protocole Santa</span>…<br>
-      Mise en ligne de la Mission 2.
+      Mise en ligne du Briefing.
     </div>
 
     <div class="loading-bar">
@@ -363,7 +416,7 @@
     <div class="loading-percent" id="loading-percent">0%</div>
 
     <div class="loading-hint">
-      Conseil : commencez déjà à penser au cadeau que vous aimeriez voir très convoité.
+      Conseil : gardez simplement votre cadeau en tête.
     </div>
   </div>
 </div>
@@ -381,7 +434,7 @@
 
       <div class="title">
         <div class="title-main">READY PLAYER SANTA™</div>
-        <div class="title-sub">MISSION 2 · BE READY</div>
+        <div class="title-sub">BRIEFING · COMPRENDRE LE JEU</div>
       </div>
 
       <div class="separator"></div>
@@ -390,7 +443,6 @@
         <span id="story-text"></span><span class="cursor" id="cursor"></span>
       </div>
 
-      
       <div class="tagline" id="tagline" style="display:none;">
         Le jeu qui transforme le Secret Santa… pour que chaque cadeau devienne une quête.
       </div>
@@ -401,6 +453,7 @@
       </div>
 
       <div class="controls">
+        <a href="index.html" class="btn-skip nav-link"><span>⟵</span> PROTOCOLE S.A.N.T.A</a>
         <button class="btn-skip" id="skip-btn" type="button">⏩ AFFICHER TOUT</button>
       </div>
 
@@ -437,7 +490,6 @@
 
   const storyEl = document.getElementById("story-text");
   const cursorEl = document.getElementById("cursor");
-  const missionPanel = document.getElementById("mission-panel");
   const taglineEl = document.getElementById("tagline");
   const footerEl = document.getElementById("footer");
   const skipBtn = document.getElementById("skip-btn");
@@ -513,16 +565,14 @@
 
   function showAfterStory() {
     cursorEl.style.display = "none";
-    missionPanel.style.display = "block";
-    setTimeout(() => taglineEl.style.display = "block", 250);
-    setTimeout(() => footerEl.style.display = "block", 450);
+    taglineEl.style.display = "block";
+    setTimeout(() => footerEl.style.display = "block", 250);
   }
 
   function showAllNow() {
     clearInterval(typeInterval);
     storyEl.textContent = storyText;
     cursorEl.style.display = "none";
-    missionPanel.style.display = "block";
     taglineEl.style.display = "block";
     footerEl.style.display = "block";
     finishedTyping = true;
@@ -531,6 +581,20 @@
   skipBtn.addEventListener("click", () => {
     if (!finishedTyping) showAllNow();
   });
+
+  // Transition douce retour
+  const navLinks = document.querySelectorAll(".nav-link");
+  navLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const href = link.getAttribute("href");
+      document.body.classList.add("page-exit");
+      setTimeout(() => {
+        window.location.href = href;
+      }, 350);
+    });
+  });
 </script>
 </body>
 </html>
+
