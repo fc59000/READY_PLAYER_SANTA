@@ -31,9 +31,16 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      position: relative;
+      opacity: 1;
+      transition: opacity 0.5s ease-out;
     }
 
-    /* Scanline global */
+    body.fade-out {
+      opacity: 0;
+    }
+
+    /* Scanline */
     body::before {
       content: "";
       position: fixed;
@@ -49,6 +56,27 @@
       opacity: 0.7;
       mix-blend-mode: soft-light;
       z-index: 5;
+    }
+
+    /* HUD snow très léger */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -10%;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(148, 163, 184, 0.22) 0, transparent 55%),
+        radial-gradient(circle at 85% 85%, rgba(125, 211, 252, 0.18) 0, transparent 60%);
+      background-repeat: no-repeat;
+      opacity: 0.17;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 4;
+      animation: hudSnowDrift 24s linear infinite alternate;
+    }
+
+    @keyframes hudSnowDrift {
+      0% { transform: translate3d(0,0,0); }
+      100% { transform: translate3d(18px, -16px, 0); }
     }
 
     /* Soft glitch */
@@ -81,7 +109,7 @@
       border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, 0.5);
       background:
-        radial-gradient(circle at top, rgba(125, 211, 252, 0.08), transparent 60%),
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.12), transparent 60%),
         radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
       box-shadow:
         0 0 30px rgba(15, 23, 42, 0.9),
@@ -95,9 +123,9 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.18), transparent 55%);
-      opacity: 0.85;
+        radial-gradient(circle at 10% 0%, rgba(125, 211, 252, 0.22), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(248, 113, 113, 0.26), transparent 55%);
+      opacity: 0.9;
       pointer-events: none;
       mix-blend-mode: screen;
     }
@@ -149,7 +177,7 @@
       height: 100%;
       width: 0%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--primary), #38bdf8, #22c55e);
+      background: linear-gradient(90deg, #22c55e, #7dd3fc, #f97373, #a855f7);
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.8);
       transition: width 0.15s linear;
     }
@@ -179,6 +207,7 @@
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      z-index: 6;
     }
 
     .shell.visible {
@@ -205,8 +234,8 @@
       position: absolute;
       inset: -40%;
       background:
-        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.16), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.20), transparent 55%);
+        radial-gradient(circle at 0% 0%, rgba(125, 211, 252, 0.20), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.22), transparent 55%);
       opacity: 0.9;
       pointer-events: none;
       mix-blend-mode: screen;
@@ -399,6 +428,8 @@
       margin-top: 16px;
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .btn-skip {
@@ -415,12 +446,21 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s ease-out;
+      text-decoration: none;
+      animation: btnPulse 3.7s ease-in-out infinite;
     }
 
     .btn-skip:hover {
       border-color: var(--primary);
       color: var(--primary);
       box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+      transform: translateY(-1px);
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(56,189,248,0.0); }
+      50% { box-shadow: 0 0 12px rgba(56,189,248,0.5); }
     }
 
     .btn-skip span {
@@ -529,6 +569,7 @@
       </div>
 
       <div class="controls">
+        <a href="index.html" class="btn-skip nav-link">⟵ PROTOCOLE S.A.N.T.A</a>
         <button class="btn-skip" id="skip-btn" type="button">
           <span>⏩</span> AFFICHER TOUT
         </button>
@@ -643,6 +684,19 @@
     if (!finishedTyping) {
       showAllNow();
     }
+  });
+
+  // Transition fade-out sur navigation
+  const navLinks = document.querySelectorAll(".nav-link");
+  navLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = link.getAttribute("href");
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = url;
+      }, 450);
+    });
   });
 </script>
 </body>
